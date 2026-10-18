@@ -3,7 +3,7 @@ import { pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
 // posgresql enum types
-export const statusEnum = pgEnum("status", [
+const statusEnum = pgEnum("status", [
   "private",
   "published",
   "archived",
