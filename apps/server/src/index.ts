@@ -3,6 +3,7 @@ import cors from "cors";
 import { logger } from "./lib/middleware/logging";
 import { categoryRouter } from "./modules/categories/category.routes";
 import { questionsRouter } from "./modules/questions/question.routes";
+import { gameRouter } from "./modules/game/game.routes";
 
 const app = express();
 const PORT = 3000;
@@ -18,15 +19,16 @@ app.use(
 
 // custom logger
 app.use(logger);
+app.use(express.json());
 
 // master router
 // should attach the individual feature routes to this router
 const apiRouter = Router();
 
-// category routes
+// feature routes
 apiRouter.use("/categories", categoryRouter);
-
 apiRouter.use("/questions", questionsRouter);
+apiRouter.use("/games", gameRouter);
 
 apiRouter.get("/health", (req, res) => {
   res.send({ status: "healthy" });

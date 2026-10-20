@@ -1,34 +1,52 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, sql, type EmptyRelations } from "drizzle-orm";
 import { db } from "../../db/db";
+import { type difficulty } from "../../../../../packages/shared/src/types";
 import { questions, questionCategories } from "../../db/schemas";
+import type { PgAsyncTransaction } from "drizzle-orm/pg-core";
+import type { PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
 
-export const getQuestions = async (categoryId: string | undefined) => {
-  if (!categoryId) {
-    throw new Error("Provide CategoryId");
+export const getQuestions = async (
+  tx: PgAsyncTransaction<PostgresJsQueryResultHKT, EmptyRelations>,
+  categories: Array<Record<string, string>> | null,
+  difficulty: difficulty | null,
+  questionCount: number = 15,
+) => {
+  let filters = [];
+
+  if (categories && categories.length > 0) {
+    filters.push(
+      inArray(
+        questionCategories.categoryId,
+        categories.map((cat) => cat.id!),
+      ),
+    );
   }
 
-  const results = await db
+  if (difficulty) {
+    filters.push(eq(questions.difficulty, difficulty!));
+  }
+
+  const results = await tx
     .select({
       id: questions.id,
-      categoryId: questionCategories.categoryId,
-      text: questions.text,
       difficulty: questions.difficulty,
-      authorID: questions.authorID,
-      status: questions.status,
-      createdAt: questions.createdAt,
-      updatedAt: questions.updatedAt,
     })
     .from(questions)
     .innerJoin(
       questionCategories,
       eq(questions.id, questionCategories.questionId),
-    ) // innerjoin makes it explicit that a question must have a category relationship
+    )
     .where(
       and(
-        eq(questionCategories.categoryId, categoryId),
+        filters.length > 0 ? and(...filters) : undefined,
         eq(questions.status, "published"),
       ),
-    );
+    )
+    .groupBy(questions.id, questions.difficulty)
+    .orderBy(sql`random()`)
+    .limit(questionCount);
 
   return results;
 };
+
+function test() {}

@@ -19,7 +19,14 @@ export const gameQuestions = pgTable(
       onDelete: "cascade",
     }),
 
+    // order in the game
+    position: integer("position").notNull(),
+
+    // points awarded for a correct answer
     points: integer("points").notNull(),
   },
-  (t) => [uniqueIndex("question_uniqe").on(t.gameId, t.questionId)],
+  (t) => [
+    uniqueIndex("question_uniqe").on(t.gameId, t.questionId),
+    uniqueIndex("question_order_unique").on(t.gameId, t.position),
+  ],
 );

@@ -6,7 +6,7 @@ import { sql } from "drizzle-orm";
 import { integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import { difficultyEnum } from "./questions";
 
-export const statusEnum = pgEnum("status", [
+export const gameStatusEnum = pgEnum("game_status", [
   "waiting",
   "active",
   "completed",
@@ -21,10 +21,14 @@ export const games = pgTable("games", {
   // who created the game
   hostId: text("host_id"),
 
-  status: statusEnum("status").default("waiting"),
+  gamestatus: gameStatusEnum("game_status").default("waiting"),
   // joinCode: text("join_code"),
 
-  questionCount: integer("question_count").notNull().default(15),
+  requestedQuestionCount: integer("requested_question_count")
+    .notNull()
+    .default(15),
+
+  availableQuestionCount: integer("available_question_count"),
 
   difficulty: difficultyEnum("difficulty").notNull().default("easy"),
 

@@ -3,3 +3,8 @@ export * from "./questions";
 export * from "./questionOptions";
 export * from "./categories";
 export * from "./questionCategories";
+export * from "./games";
+export * from "./gameQuestions";
+export * from "./gameCategories";
+export * from "./gamePlayers";
+export * from "./playerAnswers";

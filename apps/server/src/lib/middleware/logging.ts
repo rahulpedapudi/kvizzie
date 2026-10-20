@@ -6,7 +6,7 @@ export const logger = function (
   next: NextFunction,
 ) {
   console.log(
-    `-- [ SERVER ] - ${req.method} - ${req.url}\n\tRequestBody: ${!req.body ? "No Body" : req.body}`,
+    `-- [ SERVER ] - ${req.method} - ${req.url}\n\tRequestBody: ${req.body}`,
   );
   next();
 };
